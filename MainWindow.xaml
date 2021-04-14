@@ -1,0 +1,128 @@
+﻿<Window x:Class="MailClientWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MailClientWPF"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
+        <local:SenderToNameConverter x:Key="SenderToNameConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="203*"/>
+            <ColumnDefinition Width="589*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Name="WorkPanel"></StackPanel>
+        <StackPanel Margin="20" Name="leftPanel">
+
+            <Button Click="BtNewMessage">New Message</Button>
+
+        </StackPanel>
+        <StackPanel Margin="20" Name="SignInPanel">
+            <Label>Login</Label>
+            <TextBox Name="tbLogin"></TextBox>
+            <Label>Password</Label>
+            <PasswordBox Name="tbPassword"></PasswordBox>
+            <Button Margin="10" Click="BtSignIn_Click" Name="btSignIn">Увійти</Button>
+            <Label Name="lbException"></Label>
+        </StackPanel>
+        <StackPanel DataContext="{Binding ElementName=listMessages, Path=SelectedItem}"  Grid.Column="1" Name="AnswerMessagePanel"  Margin="10" >
+            <StackPanel>
+                <Button Margin="5" Click="BtBackToListMessage" Background="#00000000" HorizontalAlignment="Left" BorderBrush="#00000000" Name="btBackToListMessages">
+                    <fa:FontAwesome Foreground="Silver" Icon="ArrowLeft" FontSize="30" Height="30"></fa:FontAwesome>
+                </Button>
+                <StackPanel Margin="20 0" Orientation="Horizontal">
+
+                    <Label>Відправник</Label>
+                    <Label Name="nameSender" Content="{Binding From,Converter={StaticResource SenderToNameConverter}}"></Label>
+                </StackPanel>
+               
+                <StackPanel Margin="20 0" Orientation="Horizontal">
+
+                    <Label>Заголовок</Label>
+                    <Label Name="labelHeader" Content="{Binding Subject}"></Label>
+
+                </StackPanel>
+                <StackPanel  Margin="10">
+                    <ScrollViewer>
+                        
+                    <TextBlock Margin="10"   Width="500" Height="170" Name="tbBodyMessage" Text="{Binding TextBody}"/>
+                    </ScrollViewer>
+                      
+                    <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="AnswerTextBlock_KeyDown" Height="40" Width="500" Name="answerTextBlock"></TextBox>
+           
+                    <StackPanel Margin="5" Orientation="Horizontal">
+                        <Button Margin="20 0"  Width="60" HorizontalAlignment="Left" Click="BtAnswer_Click">Відповісти</Button>
+                        <Button   Click="AttcachClick" Background="#00000000" BorderBrush="#00000000" >
+
+                            <fa:FontAwesome Foreground="Silver" Icon="Paperclip" FontSize="30" Height="30"></fa:FontAwesome>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Name="ListMessagePanel"  Margin="10">
+            <Label HorizontalAlignment="Right" Name="lbCurrentUser"></Label>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                <Button Margin="5" Click="Refresh" Background="#00000000" HorizontalAlignment="Left" BorderBrush="#00000000" Name="btRefresh">
+                    <fa:FontAwesome Foreground="Silver" Icon="Refresh" FontSize="30" Height="30"></fa:FontAwesome>
+                </Button>
+                <Button Margin="5" Click="BtOpenNewMessages_Click" Background="#00000000" BorderBrush="#00000000" Name="btOpenNewMessages" >
+                    <fa:FontAwesome Foreground="Silver" Icon="ArrowCircleLeft" FontSize="30" Height="30"></fa:FontAwesome>
+                </Button>
+                <Button Margin="5" Click="BtOpenOldMessages_Click" Background="#00000000" BorderBrush="#00000000" Name="btOpenOldMessages">
+                    <fa:FontAwesome Foreground="Silver" Icon="ArrowCircleRight" FontSize="30" Height="30"></fa:FontAwesome>
+                </Button>
+
+
+            </StackPanel>
+            <ListBox ItemsSource="{Binding}" Name="listMessages" SelectionChanged="ListBox_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="5" Width="100" Text="{Binding From,Converter={StaticResource SenderToNameConverter}}"></TextBlock>
+                            <TextBlock Margin="5" Width="320" Text="{Binding Subject}"></TextBlock>
+                            <TextBlock Margin="5" Width="100" Text="{Binding Date,Converter={StaticResource DateTimeToStringConverter}}"></TextBlock>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+        </StackPanel>
+        <StackPanel Grid.Column="1" Margin="20" Name="NewMessagePanel">
+            <Button Click="BtBackToInbox" Background="#00000000" HorizontalAlignment="Left" BorderBrush="#00000000" >
+
+                <fa:FontAwesome Foreground="Silver" Icon="ArrowCircleLeft" FontSize="30" Height="30"></fa:FontAwesome>
+            </Button>
+            <StackPanel Margin="20 0 20 20" Orientation="Horizontal">
+                <Label Foreground="Silver" Width="100">Кому :</Label>
+                <TextBox Width="400" Name="tbSentTo" TextAlignment="Left"></TextBox>
+            </StackPanel>
+            <StackPanel Margin="20 0 0 0" Orientation="Horizontal">
+                <Label Foreground="Silver" Width="100">Тема :</Label>
+                <TextBox Width="400" Name="tbHeader" TextAlignment="Left"></TextBox>
+            </StackPanel>
+            <TextBox Name="textMessage" KeyDown="AnswerTextBlock_KeyDown" Margin="20" Height="180">
+            </TextBox>
+            <StackPanel Margin="20 0" Orientation="Horizontal">
+                <Button Click="SentMessage" Height="30">Відправити</Button>
+                <Button Margin="5" Click="AttcachClick" Background="#00000000" BorderBrush="#00000000" >
+
+                    <fa:FontAwesome Foreground="Silver" Icon="Paperclip" FontSize="30" Height="30"></fa:FontAwesome>
+                </Button>
+                <TextBlock>
+                   <StackPanel>
+                       <Label Name="pathAttachment"></Label>
+                   </StackPanel>
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
